@@ -11,13 +11,12 @@ const jwt = require('jsonwebtoken');
 const app = express()
 app.use(express.json())
 
-app.use(cors());
-// app.use(cors({
-//     origin: "http://localhost:3000", // Removed trailing slash
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-//     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-//     credentials: true // Include credentials if required
-// }));
+app.use(cors({
+    origin: "http://localhost:3000", // Removed trailing slash
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true // Include credentials if required
+}));
   
 
 const dbPath = path.join(__dirname, "tenants.db")
@@ -66,27 +65,17 @@ const initializeDBAndServer = async () => {
 
 initializeDBAndServer()
 
-
-app.get("/home", (req, res) => {
-    res.status(200).send("home page")
-})
-
-app.get("/about", (req, res) => {
-    res.status(200).send("about page")
-})
-
-
 // middleware authentication
 const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers["authorization"]
     const jwtToken = authHeader && authHeader.split(' ')[1]
 
     if (jwtToken === undefined) {
-        res.status(401).send("Invalid Jwt Token")
+        res.status(401).send({msg: "Invalid Jwt Token"})
     } else {
         jwt.verify(jwtToken, "nxtwave", async (error, payload) => {
             if (error) {
-                res.status(401).send("Invalid Jwt Token")
+                res.status(401).send({msg: "Invalid Jwt Token"})
             } else {
                 req.email = payload.email
                 next()
@@ -106,9 +95,9 @@ app.post('/register', async (req, res) => {
         const createUser = `INSERT INTO user (name, email, password) VALUES (?, ?, ?)`
         const dbResponse =  await db.run(createUser, [name, email, hashedPassword])
         const newUserId = dbResponse.lastID
-        res.send(`New User Created Successsfully with ID: ${newUserId} `)
+        res.send({msg: `New User Created Successfully with ID: ${newUserId}`})
     } else {
-        res.status(400).send('User Already Exists')
+        res.status(400).send({msg: 'User Already Exists'})
     }
 })
 
@@ -119,7 +108,7 @@ app.post('/login', async (req, res) => {
     const dbUser = await db.get(getUser, [email])
 
     if (dbUser === undefined) {
-        res.status(400).send("Invalid User")
+        res.status(400).send({msg: "Invalid User"})
     } else {
         const isPasswordMatch = await bcrypt.compare(password, dbUser.password)
         if (isPasswordMatch) {
@@ -127,7 +116,7 @@ app.post('/login', async (req, res) => {
             const jwtToken = jwt.sign(payload, "nxtwave")
             res.send({jwtToken})
         } else {
-            res.status(400).send("Invalid Password")
+            res.status(400).send({msg: "Invalid Password"})
         }
     }
 })
@@ -140,7 +129,7 @@ app.get('/profile', authenticateToken, async (req, res) => {
         const userProfile = await db.get(getUserProfile, [email])
         res.send(userProfile)
     } catch (e) {
-        res.status(500).send(`User profile not found: ${e.message}`)
+        res.status(500).send({msg:`User profile not found: ${e.message}`})
     }
 })
 
@@ -158,12 +147,12 @@ app.post('/tenants', authenticateToken, async (req, res) => {
             tenantsDetails (name, mobilenumber, monthlyrent, flatsize, location, user_id)
             VALUES (?,?,?,?,?,?)`
             await db.run(newQuery, [name, mobilenumber, monthlyrent, flatsize, location, id])
-            res.send('New Tenant Added Successfully')
+            res.send({msg: 'New Tenant Added Successfully'})
         } else {
-            res.status(400).send(`Mobile number should be ten digits`)
+            res.status(400).send({msg: `Mobile number should be ten digits`})
         }
     } catch (e) {
-        res.status(500).send(`ErrorMsg: ${e.message}`)
+        res.status(500).send({msg: `${e.message}`})
     }
 })
 
@@ -179,7 +168,7 @@ app.get("/tenants", authenticateToken, async(req,res)=>{
         const userTenantsArray = await db.all(getUserTenants, [id])
         res.send(userTenantsArray)
     } catch (e) {
-        res.status(500).send(`ErrorMsg: ${e.message}`)
+        res.status(500).send({msg: `${e.message}`})
     }
 })
 
@@ -191,7 +180,7 @@ app.get("/tenants/:tenantId", authenticateToken, async(req,res)=>{
         const userTenantObject = await db.get(getUserTenant)
         res.send(userTenantObject)
     } catch (e) {
-        res.status(500).send(`ErrorMsg: ${e.message}`)
+        res.status(500).send({msg: `${e.message}`})
     }
 })
 
@@ -205,7 +194,7 @@ app.put("/tenants/:tenantId", authenticateToken, async(req,res)=>{
         const userTenantObject = await db.get(getUserTenant)
 
         if (userTenantObject === undefined) {
-            res.status(400).send(`Tenant Details with id: ${tenantId} Not Found`)
+            res.status(400).send({msg: `Tenant Details with id: ${tenantId} Not Found`})
         } else {
             if (mobilenumber.length === 10) {
                 const updateTenant = `UPDATE tenantsDetails 
@@ -216,14 +205,14 @@ app.put("/tenants/:tenantId", authenticateToken, async(req,res)=>{
                     location = '${location}'
                 WHERE id = '${tenantId}'`
                 await db.run(updateTenant)
-                res.send("Updated Tenant Details")
+                res.send({msg: "Updated Tenant Details"})
             } else {
-                res.status(400).send(`Mobile number should be ten digits`)
+                res.status(400).send({msg: `Mobile number should be ten digits`})
             }
         }
     
     } catch (e) {
-        res.status(500).send(`ErrorMsg: ${e.message}`)
+        res.status(500).send({msg: `${e.message}`})
     }
 })
 
@@ -236,13 +225,13 @@ app.delete("/tenants/:tenantId", authenticateToken, async(req,res)=>{
         const userTenantObject = await db.get(getUserTenant)
 
         if (userTenantObject === undefined) {
-            res.status(400).send(`Tenant Details with id: ${tenantId} Not Found`)
+            res.status(400).send({msg: `Tenant Details with id: ${tenantId} Not Found`})
         } else {
             const deleteTenant = `DELETE FROM tenantsDetails WHERE id = '${tenantId}'`
             await db.run(deleteTenant)
-            res.send('Deleted Tenant Details')
+            res.send({msg: 'Deleted Tenant Details'})
         }
     } catch (e) {
-        res.status(500).send(`ErrorMsg: ${e.message}`)
+        res.status(500).send({msg: `${e.message}`})
     }
 })
