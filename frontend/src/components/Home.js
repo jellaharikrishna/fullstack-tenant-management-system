@@ -10,13 +10,12 @@ import TenantForm from './TenantForm';
 import '../styles/Home.css'
 import { toast } from 'react-toastify';
 
-let url = 'https://fullstack-tenant-management-system.onrender.com/tenants'
-
 const Home = () => {
   const [tenantData, setTenantData] = useState([])
   const navigate = useNavigate()
 
   const token = Cookies.get('jwtToken')
+  let url = 'https://fullstack-tenant-management-system.onrender.com/tenants'
 
   useEffect(() => {
     const getTenantsData = async () => {

@@ -40,6 +40,8 @@ const TenantForm = ({tenantDetails, addTenant, viewTenant, editTenant}) => {
 
         const response = await fetch(url, options)
         const data = await response.json()
+        console.log(response)
+        console.log(data)
 
         if (response.ok) {
             setShowForm(false)
