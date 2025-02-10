@@ -135,7 +135,7 @@ app.post('/tenants', authenticateToken, async (req, res) => {
             const newQuery = `INSERT INTO 
             tenantsDetails (name, mobilenumber, monthlyrent, flatsize, location, user_id)
             VALUES (?,?,?,?,?,?)`
-            await db.run(newQuery, [name, mobilenumber, monthlyrent, flatsize, location, id, email])
+            await db.run(newQuery, [name, mobilenumber, monthlyrent, flatsize, location, id])
             res.send({msg: 'New tenant added successfully'})
         } else {
             res.status(400).send({msg: `Mobile number should be ten digits`})
