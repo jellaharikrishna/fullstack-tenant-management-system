@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Cookies from "js-cookie"
 
 import '../styles/Login.css'
-
-let url = 'https://fullstack-tenant-management-system.onrender.com'
 
 const Login = () => {
   const [userData, setUserData] = useState({
@@ -14,61 +12,70 @@ const Login = () => {
   })
   const [errMsg, setErrMsg] = useState('')
   const [showErrMsg, setShowErrMsg] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate =  useNavigate()
 
   const handlerChange = (e) => {
     setUserData({...userData, [e.target.name]: e.target.value})
   }
 
-  const onSubmitFailure = (err) => {
-    console.log(err)
-    // setErrMsg(err)
-    // setShowErrMsg(true)
-  }
-
   const onSubmitSuccess = (jwtToken) => {
-    console.log(jwtToken)
+    Cookies.set('jwtToken', jwtToken, {expires: 30})
+    navigate("/")    
+  }
+
+  const onSubmitFailure = (msg) => {
+    toast.error(`${msg}`);
+    setErrMsg(msg)
+    setShowErrMsg(true)
   }
 
 
-  const loginFormSubmit = async(e) => {
+  const handlerForm = async (e) => {
+    setIsLoading(true)
     e.preventDefault()
-   try {
+
+    let url = 'https://fullstack-tenant-management-system.onrender.com/login'
+
     const options = {
       method: "POST",
       headers:{ 'Content-Type': 'application/json'},
       body: JSON.stringify(userData),
     }
-    const response = await fetch(`${url}/login`, options)
-    const data = await response.json() 
-    console.log(response)
-    console.log(data)
+    const response = await fetch(url, options)
+    const data = await response.json()
 
-    // if (data) {
-    //   onSubmitSuccess(data.jwtToken)
-    // } else {
-    //   onSubmitFailure(data.err)
-    // }
+    setIsLoading(false)
+
+    if (response.ok) {
+      onSubmitSuccess(data.jwtToken)
+    } else {
+      onSubmitFailure(data.msg)
+    }
    
-   } catch (e) {
-    console.log(`login error message: ${e}`)
-   }
   }
 
+  const token = Cookies.get('jwtToken')
 
+  if (token !== undefined){
+     return navigate('/')
+  }
 
   return (
-    <div>
-      <form onSubmit={loginFormSubmit}>
-        <div>
-          <label htmlFor='email'>Email</label>
-          <input value={userData.email} onChange={handlerChange} id='email' type='email' name='email' placeholder='Enter your email' required />
+    <div className='login-container'>
+      <form onSubmit={handlerForm} className='login-form'>
+        <h1 className='login-form-heading'>User Login</h1>
+        <div className='login-input-card'>
+          <label htmlFor='email' className='login-input-label'>Email</label>
+          <input className='login-input' value={userData.email} onChange={handlerChange} id='email' type='email' name='email' placeholder='Enter your email' required />
         </div>
-        <div>
-          <label htmlFor='password'>Password</label>
-          <input value={userData.password} onChange={handlerChange} id='password' type='password' name='password' placeholder='Enter your password' required />
+        <div className='login-input-card'>
+          <label htmlFor='password' className='login-input-label'>Password</label>
+          <input className='login-input' value={userData.password} onChange={handlerChange} id='password' type='password' name='password' placeholder='Enter your password' required />
         </div>
-        <button type='submit'>Login</button>
-        <p>If you don't have account <Link to='/register'>Register Here</Link></p>
+        <button className='login-form-btn' type='submit'>{isLoading ? 'Loading...' : 'Login'}</button>
+        {showErrMsg && <p className='login-form-err-msg'>* {errMsg}</p>}
+        <p className='login-form-register-here-para'>If you don't have an account ? <Link to='/register'>Register Here</Link></p>
       </form>
     </div>
   )

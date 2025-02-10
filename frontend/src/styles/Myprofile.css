@@ -1,0 +1,51 @@
+.userprofile-info-card{
+    width: 400px;
+    margin: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.userprofile-info-heading{
+    font-size: 26px;
+    text-align: center;
+    margin: 30px;
+}
+
+.userprofile-info-para{
+    font-size: 14px;
+}
+
+/**/
+.changepassword-form{
+    width: 450px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 3px 3px #f1f1f1f1;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.changepassword-heading{
+    font-size: 28px;
+    padding-bottom: 10px;
+}
+
+.changepassword-input-card{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.changepassword-input-label{
+    font-family: Arial, Helvetica, sans-serif;
+    color: grey;
+}
+
+.changepassword-input{
+    outline: none;
+    padding-left: 10px;
+    height: 32px;
+}
+

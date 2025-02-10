@@ -1,0 +1,23 @@
+.navbar-container{
+    background-color: aqua;
+    height: 10vh;
+    display: flex;
+}
+
+.navbar-card{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 30%;
+    margin: auto;
+}
+
+.navbar-link{
+    text-decoration: none;
+    color: black;
+}
+
+.navbar-btn{
+    border: none;
+    background: transparent;
+}

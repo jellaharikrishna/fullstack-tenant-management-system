@@ -114,24 +114,13 @@ app.post('/login', async (req, res) => {
         if (isPasswordMatch) {
             const payload = {email: email}
             const jwtToken = jwt.sign(payload, "nxtwave")
-            res.send({jwtToken})
+            res.send({msg: "User Login Successfully", jwtToken})
         } else {
             res.status(400).send({msg: "Invalid Password"})
         }
     }
 })
 
-// user profile
-app.get('/profile', authenticateToken, async (req, res) => {
-    try {
-        const {email} = req
-        const getUserProfile = `SELECT * FROM user WHERE email = ?`
-        const userProfile = await db.get(getUserProfile, [email])
-        res.send(userProfile)
-    } catch (e) {
-        res.status(500).send({msg:`User profile not found: ${e.message}`})
-    }
-})
 
 // adding new tenant
 app.post('/tenants', authenticateToken, async (req, res) => {
@@ -145,8 +134,9 @@ app.post('/tenants', authenticateToken, async (req, res) => {
         if (mobilenumber.length === 10) {
             const newQuery = `INSERT INTO 
             tenantsDetails (name, mobilenumber, monthlyrent, flatsize, location, user_id)
-            VALUES (?,?,?,?,?,?)`
-            await db.run(newQuery, [name, mobilenumber, monthlyrent, flatsize, location, id])
+            VALUES (?,?,?,?,?,?)
+            WHERE email = ?`
+            await db.run(newQuery, [name, mobilenumber, monthlyrent, flatsize, location, id, email])
             res.send({msg: 'New Tenant Added Successfully'})
         } else {
             res.status(400).send({msg: `Mobile number should be ten digits`})
@@ -233,5 +223,58 @@ app.delete("/tenants/:tenantId", authenticateToken, async(req,res)=>{
         }
     } catch (e) {
         res.status(500).send({msg: `${e.message}`})
+    }
+})
+
+
+// user profile
+app.get('/profile', authenticateToken, async (req, res) => {
+    try {
+        const {email} = req
+        const getUserProfile = `SELECT * FROM user WHERE email = ?`
+        const userProfile = await db.get(getUserProfile, [email])
+        res.send(userProfile)
+    } catch (e) {
+        res.status(500).send({msg:`User profile not found: ${e.message}`})
+    }
+})
+
+
+// user profile changePassword 
+app.put("/profile", authenticateToken, async (req,res) => {
+    try {
+        const {email} = req
+        const {currentPassword, newPassword} = req.body
+        const getUserProfile = `SELECT * FROM user WHERE email = ?`
+        const userProfile = await db.get(getUserProfile, [email])
+
+        const matchCurrentPassword = await bcrypt.compare(currentPassword, userProfile.password)
+        const newHashedPassword = await bcrypt.hash(newPassword,10)
+
+        if (matchCurrentPassword === true){
+            const updatePassword = `UPDATE user SET password ='${newHashedPassword}' WHERE email = ?`
+            await db.run(updatePassword, [email])
+            res.send({msg: 'New Password Updated Successfully'});
+        }else{
+            res.status(400).send({msg: "Invalid Current Password"})
+        }
+    } catch (e) {
+        res.status(500).send({msg:`User profile not found: ${e.message}`})
+    }
+})
+
+
+// DELETE user profile
+app.delete("/profile/:id",authenticateToken,async (req, res) => {
+    try {
+        const {email} = req
+        const {id} = req.params
+        const deleteUser = `DELETE FROM user WHERE email = ?`
+        const userTenantsDetailsDeleted = `DELETE FROM tenantsDetails WHERE user_id = ?`
+        await db.run(userTenantsDetailsDeleted, [id])
+        await db.run(deleteUser, [email])
+        res.send({msg: "User Deleted Successfully"})
+    } catch (e) {
+        res.status(500).send({msg:`User profile not found: ${e.message}`})
     }
 })

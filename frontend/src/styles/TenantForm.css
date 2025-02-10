@@ -1,0 +1,61 @@
+.tenantform-form{
+    width: 450px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 3px 3px #f1f1f1f1;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.tenantform-form-heading{
+    font-size: 28px;
+    padding-bottom: 10px;
+}
+
+.tenantform-input-card{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.tenantform-input-label{
+    font-family: Arial, Helvetica, sans-serif;
+    color: grey;
+}
+
+.tenantform-input{
+    outline: none;
+    padding-left: 10px;
+    height: 32px;
+}
+
+.tenantform-form-btn{
+    margin-top: 10px;
+    background-color:dodgerblue;
+    border: none;
+    border-radius: 4px;
+    height: 32px;
+    width: 80px;
+    color: #ffffff;
+}
+
+
+.tenant-info-card{
+    width: 450px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 3px 3px #f1f1f1f1;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.tenant-info-heading{
+    font-size: 26px;
+    text-align: center;
+}
+
+.tenant-info-para{
+    font-size: 14px;
+}
