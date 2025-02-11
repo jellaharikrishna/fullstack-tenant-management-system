@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import Cookies from 'js-cookie'
 import {toast} from 'react-toastify';
+import {Button} from 'react-bootstrap';
 
 import '../styles/TenantForm.css'
 
 const locationsList = ['Hyderabad', 'Bangalore', 'Chennai', 'Pune', 'Mumbai', 'Delhi', 'Kolkata']
 const flatsizeList = ['1 BHK', '2 BHK', '3 BHK', '4 BHK',]
 
-const TenantForm = ({tenantDetails, addTenant, viewTenant, editTenant}) => {
+const TenantForm = ({tenantDetails, addTenant, viewTenant, editTenant, fetchData}) => {
     const [tenantData, setTenantData] = useState({
         name: tenantDetails ? tenantDetails.name : '',
         mobilenumber: tenantDetails ? tenantDetails.mobilenumber : '',
@@ -40,12 +41,11 @@ const TenantForm = ({tenantDetails, addTenant, viewTenant, editTenant}) => {
 
         const response = await fetch(url, options)
         const data = await response.json()
-        console.log(response)
-        console.log(data)
 
         if (response.ok) {
             setShowForm(false)
             toast.success(data.msg)
+            fetchData()
         } else {
             toast.error(data.msg)
         }
@@ -53,38 +53,41 @@ const TenantForm = ({tenantDetails, addTenant, viewTenant, editTenant}) => {
 
   return (
     <>
-    {((showForm && editTenant === "editTenant") || (showForm && addTenant === 'addTenant')) &&
+    { ((showForm && editTenant === "editTenant") || (showForm && addTenant === 'addTenant')) &&
         <form onSubmit={handlerSubmit} className='tenantform-form'>
-           <h1 className='tenantform-form-heading'>{tenantDetails ? 'Edit Tenant' : 'Add Tenant'}</h1>
-            <div className='tenantform-input-card'>
-                <label className='tenantform-input-label' htmlFor='name'>Name</label>
-                <input onChange={handlerchange} className='tenantform-input' id='name' value={tenantData.name} type='text' name='name' placeholder='Enter tenant name' required />
-            </div>
-            <div className='tenantform-input-card'>
-                <label className='tenantform-input-label' htmlFor='mobilenumber'>Mobile Number</label>
-                <input onChange={handlerchange} className='tenantform-input' id='mobilenumber' value={tenantData.mobilenumber} type='number' name='mobilenumber' placeholder='Enter tenant mobile number' required/>
-            </div>
-            <div className='tenantform-input-card'>
-                <label className='tenantform-input-label' htmlFor='monthlyrent'>Monthly Rent</label>
-                <input onChange={handlerchange} className='tenantform-input' id='monthlyrent' value={tenantData.monthlyrent} type='number' name='monthlyrent' placeholder='Enter monthly rent' required/>
-            </div>
-            <div className='tenantform-input-card'>
-                <label className='tenantform-input-label' htmlFor='location'>Location</label>
-                <select onChange={handlerchange} className='tenantform-input' id='location' value={tenantData.location} type='text' name='location' placeholder='Enter location' required>
-                    {locationsList.map(eachLocation => 
-                    <option key={eachLocation}>{eachLocation}</option>
-                )}
-                </select>
-            </div>
-            <div className='tenantform-input-card'>
-                <label className='tenantform-input-label' htmlFor='flatsize'>Flat Size</label>
-                <select onChange={handlerchange} className='tenantform-input' id='flatsize' value={tenantData.flatsize} type='text' name='flatsize' placeholder='Enter flatsize' required>
-                    {flatsizeList.map(eachFlatsize => 
-                    <option key={eachFlatsize}>{eachFlatsize}</option>
-                )}
-                </select>
-            </div>
-            <button className='tenantform-form-btn' type='submit'>{tenantDetails ? 'Update' : 'Save'}</button>
+            <h1 className='tenantform-form-heading'>{tenantDetails ? 'Edit Tenant' : 'Add Tenant'}</h1>
+             <div className='tenantform-input-card'>
+                 <label className='tenantform-input-label' htmlFor='name'>Name</label>
+                 <input onChange={handlerchange} className='tenantform-input' id='name' value={tenantData.name} type='text' name='name' placeholder='Enter tenant name' required />
+             </div>
+             <div className='tenantform-input-card'>
+                 <label className='tenantform-input-label' htmlFor='mobilenumber'>Mobile Number</label>
+                 <input onChange={handlerchange} className='tenantform-input' id='mobilenumber' value={tenantData.mobilenumber} type='number' name='mobilenumber' placeholder='Enter tenant mobile number' required/>
+             </div>
+             <div className='tenantform-input-card'>
+                 <label className='tenantform-input-label' htmlFor='monthlyrent'>Monthly Rent</label>
+                 <input onChange={handlerchange} className='tenantform-input' id='monthlyrent' value={tenantData.monthlyrent} type='number' name='monthlyrent' placeholder='Enter monthly rent' required/>
+             </div>
+             <div className='tenantform-input-card'>
+                 <label className='tenantform-input-label' htmlFor='location'>Location</label>
+                 <select onChange={handlerchange} className='tenantform-input' id='location' value={tenantData.location} type='text' name='location' placeholder='Enter location' required>
+                     {locationsList.map(eachLocation => 
+                     <option key={eachLocation} value={eachLocation}>{eachLocation}</option>
+                 )}
+                 </select>
+             </div>
+             <div className='tenantform-input-card'>
+                 <label className='tenantform-input-label' htmlFor='flatsize'>Flat Size</label>
+                 <select onChange={handlerchange} className='tenantform-input' id='flatsize' value={tenantData.flatsize} type='text' name='flatsize' placeholder='Enter flatsize' required>
+                     {flatsizeList.map(eachFlatsize => 
+                     <option key={eachFlatsize} value={eachFlatsize}>{eachFlatsize}</option>
+                 )}
+                 </select>
+             </div>
+             <div>
+             <Button variant="success" className="me-3" type='submit'>{tenantDetails ? 'Update' : 'Save'}</Button>
+             <Button variant="primary" className="me-3" onClick={() => setShowForm(false)}>Close</Button>
+             </div>
         </form>
     }
     {viewTenant === "viewTenant" && 

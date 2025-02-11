@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import {useNavigate} from "react-router-dom"
 import Cookies from 'js-cookie';
 import {Button} from 'react-bootstrap';
 import Popup from 'reactjs-popup';
@@ -11,35 +12,40 @@ const Myprofile = () => {
   const [userProfile, setUserProfile] = useState({})
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
+  const navigate = useNavigate(); 
 
   const token = Cookies.get('jwtToken')
   const url = 'https://fullstack-tenant-management-system.onrender.com/profile'
 
-  const getUserProfile = async () => {
+  const getUserProfile =  useCallback(async () => {
+    if (!token) {
+      return navigate('/login');
+    }
     const options = {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         authorization: `Bearer ${token}`
       }
     }
     const response = await fetch(url, options)
     const data = await response.json()
     setUserProfile(data)
-  }
+  }, [navigate, token, url])
 
   useEffect(() => {
     getUserProfile()
-  }, [])
+  }, [getUserProfile])
   
 
   const handlerSubmit = async (e) => {
     e.preventDefault()
     if (currentPassword.trim() === "" || currentPassword.length === 0){
-      toast.warning("Please Enter valid current password")
+      toast.error("Please Enter valid current password")
     }else if(newPassword.trim() === "" || newPassword.length === 0){
-      toast.warning("Please Enter valid New Password")
+      toast.error("Please Enter valid New Password")
     }else if(currentPassword === newPassword){
-      toast.warning("New Password can not be same as the Current Password.")
+      toast.error("New Password can not be same as the Current Password.")
     }
     else{
       let updatedPassword = {
@@ -49,18 +55,17 @@ const Myprofile = () => {
       const options = {
           method:"PUT",
           headers:{
-              authorization:`Bear ${token}`,
+              authorization:`Bearer ${token}`,
               'Content-type':"application/json",
           },
           body: JSON.stringify(updatedPassword)
       }
       const response = await fetch(url, options)
       const data = await response.json()
-      console.log(response)
-      console.log(data)
-
+    
       if (response.ok === true){
-          toast.success("Password updated Successfully")
+          toast.success("Password updated successfully")
+          navigate("/")
           setCurrentPassword("")
           setNewPassword("")
       }else{
@@ -68,6 +73,24 @@ const Myprofile = () => {
       }
     }
   }
+
+  const deleteAccount = async () => {
+    if (window.confirm("Are you sure you want to delete the account ?")) {
+      const options = {
+          method:"DELETE",
+          headers:{
+            authorization:`Bear ${token}`
+          }
+      }
+    const response = await fetch(`${url}/${userProfile.id}`, options)
+    const data = await response.json()
+      if (response.ok) {
+          toast.success(data.msg)
+          Cookies.remove("jwtToken");
+          navigate("/register");
+      }
+    }      
+}
 
 
   return (
@@ -98,7 +121,7 @@ const Myprofile = () => {
                   </form>
             )}
         </Popup>
-        <Button variant="danger" className="me-3">Delete Account</Button>
+        <Button variant="danger" className="me-3" onClick={deleteAccount}>Delete Account</Button>
         </div>
     </div>
     </div>

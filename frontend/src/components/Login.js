@@ -25,7 +25,7 @@ const Login = () => {
   }
 
   const onSubmitFailure = (msg) => {
-    toast.error(`${msg}`);
+    toast.error(msg);
     setErrMsg(msg)
     setShowErrMsg(true)
   }
@@ -44,7 +44,6 @@ const Login = () => {
     }
     const response = await fetch(url, options)
     const data = await response.json()
-
     setIsLoading(false)
 
     if (response.ok) {
@@ -59,26 +58,26 @@ const Login = () => {
 
   if (token !== undefined){
      return navigate('/')
+  } else {
+    return (
+      <div className='login-container'>
+        <form onSubmit={handlerForm} className='login-form'>
+          <h1 className='login-form-heading'>User Login</h1>
+          <div className='login-input-card'>
+            <label htmlFor='email' className='login-input-label'>Email</label>
+            <input className='login-input' value={userData.email} onChange={handlerChange} id='email' type='email' name='email' placeholder='Enter your email' required />
+          </div>
+          <div className='login-input-card'>
+            <label htmlFor='password' className='login-input-label'>Password</label>
+            <input className='login-input' value={userData.password} onChange={handlerChange} id='password' type='password' name='password' placeholder='Enter your password' required />
+          </div>
+          <button className='login-form-btn' type='submit'>{isLoading ? 'Loading...' : 'Login'}</button>
+          {showErrMsg && <p className='login-form-err-msg'>* {errMsg}</p>}
+          <p className='login-form-register-here-para'>If you don't have an account ? <Link to='/register'>Register Here</Link></p>
+        </form>
+      </div>
+    )
   }
-
-  return (
-    <div className='login-container'>
-      <form onSubmit={handlerForm} className='login-form'>
-        <h1 className='login-form-heading'>User Login</h1>
-        <div className='login-input-card'>
-          <label htmlFor='email' className='login-input-label'>Email</label>
-          <input className='login-input' value={userData.email} onChange={handlerChange} id='email' type='email' name='email' placeholder='Enter your email' required />
-        </div>
-        <div className='login-input-card'>
-          <label htmlFor='password' className='login-input-label'>Password</label>
-          <input className='login-input' value={userData.password} onChange={handlerChange} id='password' type='password' name='password' placeholder='Enter your password' required />
-        </div>
-        <button className='login-form-btn' type='submit'>{isLoading ? 'Loading...' : 'Login'}</button>
-        {showErrMsg && <p className='login-form-err-msg'>* {errMsg}</p>}
-        <p className='login-form-register-here-para'>If you don't have an account ? <Link to='/register'>Register Here</Link></p>
-      </form>
-    </div>
-  )
 }
 
 export default Login

@@ -18,3 +18,10 @@
     align-items: center;
     justify-content: center;
 }
+
+/**/  
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+  }
+  

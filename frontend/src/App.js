@@ -6,6 +6,7 @@ import Login from './components/Login'
 import Home from './components/Home'
 import Myprofile from './components/Myprofile'
 
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => (
   <>

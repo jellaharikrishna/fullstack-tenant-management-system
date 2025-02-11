@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import {Link} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
 import '../styles/Register.css'
 
 const Register = () => {
@@ -35,21 +34,18 @@ const Register = () => {
       const response = await fetch(url, options)
       const data = await response.json() 
       setIsLoading(false)
-      console.log(response)
-      console.log(data)
   
       if (response.ok) {
-        toast.success(`${data.msg}`)
+        toast.success(data.msg)
         setIsRegister(true)
         setRegisterMsg(data.msg)
         setUserData({name: '', email: '', password: ''})
         setConfirmPassword('')
       } else {
-        toast.error(`${data.msg}`)
+        toast.error(data.msg)
         setErrMsg(data.msg)
         setShowErrMsg(true)
       }
-      
     } else {
       toast.error("Password doesn't match")
       setErrMsg("Password doesn't match")
