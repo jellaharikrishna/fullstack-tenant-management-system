@@ -12,7 +12,7 @@ const app = express()
 app.use(express.json())
 
 app.use(cors({
-    origin: "*", // Removed trailing slash
+    origin: "https://fullstack-tenant-management-system-1wmb.onrender.com", // Removed trailing slash
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true // Include credentials if required
