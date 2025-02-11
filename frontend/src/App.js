@@ -5,7 +5,6 @@ import Register from './components/Register'
 import Login from './components/Login'
 import Home from './components/Home'
 import Myprofile from './components/Myprofile'
-import NotFound from './components/NotFound'
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,7 +17,6 @@ const App = () => (
       <Route exact path='/login' element={<Login/>} />
       <Route exact path='/' element={<Home />} />
       <Route exact path='/myprofile' element={<Myprofile />} />
-      <Route exact path='*' element={<NotFound />} />
     </Routes>
   </BrowserRouter>
   </>
