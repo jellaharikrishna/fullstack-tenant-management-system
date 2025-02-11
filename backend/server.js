@@ -12,7 +12,7 @@ const app = express()
 app.use(express.json())
 
 app.use(cors({
-    origin: "http://localhost:3000", // Removed trailing slash
+    origin: "https://fullstack-tenant-management-system.vercel.app/", // Removed trailing slash
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true // Include credentials if required
