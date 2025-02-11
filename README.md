@@ -76,14 +76,6 @@ npm start
 - `PUT /profile` - 🔄 Update password
 - `DELETE /profile/:id` - 🗑 Delete user profile
 
-## ⚙ Environment Variables
-
-Create a `.env` file in the backend directory and add:
-```
-JWT_SECRET=nxtwave
-PORT=5000
-```
-
 ## 📜 License
 This project is licensed under the MIT License.
 
